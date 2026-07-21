@@ -6,6 +6,7 @@ import cookieParser from "cookie-parser";
 import morgan from "morgan";
 import errorHandler from "./middlewares/error.middleware.js";
 import authRoutes from "./routes/auth.routes.js";
+import hackathonRoutes from "./routes/hackathon.routes.js";
 
 
 
@@ -57,6 +58,7 @@ app.get("/", (req, res) => {
 // =========================
 
 app.use("/api/v1/auth", authRoutes);
+app.use("/api/v1/hackathons", hackathonRoutes);
 
 
 
