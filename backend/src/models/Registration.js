@@ -2,9 +2,9 @@ import mongoose from "mongoose";
 
 const registrationSchema = new mongoose.Schema(
   {
-    participant: {
+    team: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: "User",
+      ref: "Team",
       required: true,
     },
 
@@ -48,10 +48,10 @@ const registrationSchema = new mongoose.Schema(
   }
 );
 
-// A participant can register only once for a hackathon
+// A team can register only once for a hackathon
 registrationSchema.index(
   {
-    participant: 1,
+    team: 1,
     hackathon: 1,
   },
   {
@@ -60,7 +60,7 @@ registrationSchema.index(
 );
 
 // Useful indexes
-registrationSchema.index({ participant: 1 });
+registrationSchema.index({ team: 1 });
 registrationSchema.index({ hackathon: 1 });
 registrationSchema.index({ status: 1 });
 

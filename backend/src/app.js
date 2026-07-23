@@ -8,6 +8,8 @@ import errorHandler from "./middlewares/error.middleware.js";
 import authRoutes from "./routes/auth.routes.js";
 import hackathonRoutes from "./routes/hackathon.routes.js";
 import registrationRoutes from "./routes/registration.routes.js";
+import teamRoutes from "./routes/team.routes.js";
+import submissionRoutes from "./routes/submission.routes.js";
 
 
 
@@ -61,7 +63,8 @@ app.get("/", (req, res) => {
 app.use("/api/v1/auth", authRoutes);
 app.use("/api/v1/hackathons", hackathonRoutes);
 app.use("/api/v1/registrations", registrationRoutes);
-
+app.use("/api/v1/teams", teamRoutes);
+app.use("/api/v1/submissions", submissionRoutes);
 
 
 // =========================

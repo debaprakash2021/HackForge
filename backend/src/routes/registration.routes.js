@@ -1,9 +1,14 @@
 import express from "express";
 
+import authMiddleware from "../middlewares/auth.middleware.js";
+import authorizeRoles from "../middlewares/role.middleware.js";
+
+import { ROLES } from "../constants/roles.js";
+
 import {
-  registerForHackathon,
+  registerTeam,
   cancelRegistration,
-  getMyRegistrations,
+  getMyRegistration,
   getHackathonRegistrations,
   updateRegistrationStatus,
 } from "../controllers/registration.controller.js";
@@ -14,37 +19,31 @@ import {
   validate,
 } from "../validators/registration.validator.js";
 
-import authMiddleware from "../middlewares/auth.middleware.js";
-import authorizeRoles from "../middlewares/role.middleware.js";
-import { ROLES } from "../constants/roles.js";
-
 const router = express.Router();
 
-/*
-|--------------------------------------------------------------------------
-| Participant Routes
-|--------------------------------------------------------------------------
-*/
+/* -------------------------------------------------------------------------- */
+/*                           Team Registration                                */
+/* -------------------------------------------------------------------------- */
 
-// Register for a hackathon
+// Register Team
 router.post(
   "/",
   authMiddleware,
   authorizeRoles(ROLES.PARTICIPANT),
   createRegistrationValidator,
   validate,
-  registerForHackathon
+  registerTeam
 );
 
-// My registrations
+// My Registration
 router.get(
   "/me",
   authMiddleware,
   authorizeRoles(ROLES.PARTICIPANT),
-  getMyRegistrations
+  getMyRegistration
 );
 
-// Cancel registration
+// Cancel Registration
 router.delete(
   "/:id",
   authMiddleware,
@@ -52,13 +51,11 @@ router.delete(
   cancelRegistration
 );
 
-/*
-|--------------------------------------------------------------------------
-| Organizer Routes
-|--------------------------------------------------------------------------
-*/
+/* -------------------------------------------------------------------------- */
+/*                           Organizer Routes                                 */
+/* -------------------------------------------------------------------------- */
 
-// View registrations of a hackathon
+// All Registrations of a Hackathon
 router.get(
   "/hackathon/:hackathonId",
   authMiddleware,

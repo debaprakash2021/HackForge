@@ -4,31 +4,31 @@ import ApiResponse from "../utils/ApiResponse.js";
 import {
   createRegistrationService,
   cancelRegistrationService,
-  getMyRegistrationsService,
+  getMyRegistrationService,
   getHackathonRegistrationsService,
   updateRegistrationStatusService,
 } from "../services/registration.service.js";
 
+/* -------------------------------------------------------------------------- */
+/*                     Register Team for Hackathon                            */
+/* -------------------------------------------------------------------------- */
 
 
 
+//Register Team for Hackathon
+export const registerTeam = asyncHandler(async (req, res) => {
+  const { team, hackathon } = req.body;
 
-
-
-
-
-
-// Register for a Hackathon
-export const registerForHackathon = asyncHandler(async (req, res) => {
   const registration = await createRegistrationService(
     req.user._id,
-    req.body.hackathon
+    team,
+    hackathon
   );
 
   return res.status(201).json(
     new ApiResponse(
       201,
-      "Registration successful",
+      "Team registered successfully",
       registration
     )
   );
@@ -36,14 +36,7 @@ export const registerForHackathon = asyncHandler(async (req, res) => {
 
 
 
-
-
-
-
-
-
-
-// Cancel Registration
+//Cancel Registration
 export const cancelRegistration = asyncHandler(async (req, res) => {
   const registration = await cancelRegistrationService(
     req.params.id,
@@ -62,21 +55,15 @@ export const cancelRegistration = asyncHandler(async (req, res) => {
 
 
 
-
-
-
-
-
-
-// Get My Registrations
-export const getMyRegistrations = asyncHandler(async (req, res) => {
-  const registrations = await getMyRegistrationsService(req.user._id);
+//Get My Registration
+export const getMyRegistration = asyncHandler(async (req, res) => {
+  const registration = await getMyRegistrationService(req.user._id);
 
   return res.status(200).json(
     new ApiResponse(
       200,
-      "Registrations fetched successfully",
-      registrations
+      "Registration fetched successfully",
+      registration
     )
   );
 });
@@ -84,13 +71,7 @@ export const getMyRegistrations = asyncHandler(async (req, res) => {
 
 
 
-
-
-
-
-
-
-// Get Registrations for a Hackathon
+//Get Registrations of a Hackathon
 export const getHackathonRegistrations = asyncHandler(async (req, res) => {
   const registrations = await getHackathonRegistrationsService(
     req.params.hackathonId,
@@ -110,24 +91,21 @@ export const getHackathonRegistrations = asyncHandler(async (req, res) => {
 
 
 
-
-
-
-
-
-// Approve / Reject Registration
+//Approve / Reject Registration 
 export const updateRegistrationStatus = asyncHandler(async (req, res) => {
+  const { status, remarks } = req.body;
+
   const registration = await updateRegistrationStatusService(
     req.params.id,
     req.user._id,
-    req.body.status,
-    req.body.remarks
+    status,
+    remarks
   );
 
   return res.status(200).json(
     new ApiResponse(
       200,
-      `Registration ${req.body.status.toLowerCase()} successfully`,
+      "Registration updated successfully",
       registration
     )
   );

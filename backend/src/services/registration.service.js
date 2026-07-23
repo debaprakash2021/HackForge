@@ -1,102 +1,120 @@
 import Registration from "../models/Registration.js";
+import Team from "../models/Team.js";
 import Hackathon from "../models/Hackathon.js";
+
 import ApiError from "../utils/ApiError.js";
 
+/* -------------------------------------------------------------------------- */
+/*                       Register Team for Hackathon                          */
+/* -------------------------------------------------------------------------- */
 
-
-
-
-
-
-
-
-
-
-// Register for a Hackathon
 export const createRegistrationService = async (
-  participantId,
+  leaderId,
+  teamId,
   hackathonId
 ) => {
+  // Check Hackathon
   const hackathon = await Hackathon.findById(hackathonId);
 
   if (!hackathon || hackathon.isDeleted) {
     throw new ApiError(404, "Hackathon not found");
   }
 
+  // Check Team
+  const team = await Team.findById(teamId);
+
+  if (!team || team.isDeleted) {
+    throw new ApiError(404, "Team not found");
+  }
+
+  // Only leader can register
+  if (team.leader.toString() !== leaderId.toString()) {
+    throw new ApiError(
+      403,
+      "Only the team leader can register the team"
+    );
+  }
+
+  // Team must belong to this hackathon
+  if (team.hackathon.toString() !== hackathonId.toString()) {
+    throw new ApiError(
+      400,
+      "Team does not belong to this hackathon"
+    );
+  }
+
+  // Registration open?
   if (hackathon.registrationStatus !== "Open") {
-    throw new ApiError(400, "Registration is closed");
+    throw new ApiError(
+      400,
+      "Registration is closed"
+    );
   }
 
+  // Deadline check
   if (new Date() > hackathon.registrationDeadline) {
-    throw new ApiError(400, "Registration deadline has passed");
+    throw new ApiError(
+      400,
+      "Registration deadline has passed"
+    );
   }
 
+  // Already registered?
   const existingRegistration = await Registration.findOne({
-    participant: participantId,
+    team: teamId,
     hackathon: hackathonId,
     isDeleted: false,
   });
 
   if (existingRegistration) {
     throw new ApiError(
-      409,
-      "You have already registered for this hackathon"
+      400,
+      "Team has already registered"
     );
   }
 
   const registration = await Registration.create({
-    participant: participantId,
+    team: teamId,
     hackathon: hackathonId,
   });
 
   hackathon.registrationCount += 1;
   await hackathon.save();
 
-  return registration.populate([
-    {
-      path: "participant",
-      select: "fullName email",
-    },
-    {
-      path: "hackathon",
-      select: "title theme startDate endDate",
-    },
-  ]);
+  return await Registration.findById(registration._id)
+    .populate("team")
+    .populate("hackathon");
 };
 
+/* -------------------------------------------------------------------------- */
+/*                         Cancel Registration                                */
+/* -------------------------------------------------------------------------- */
 
-
-
-
-
-
-
-
-
-
-
-// Cancel Registration
 export const cancelRegistrationService = async (
   registrationId,
-  participantId
+  leaderId
 ) => {
-  const registration = await Registration.findById(registrationId);
+  const registration = await Registration.findById(registrationId)
+    .populate("team");
 
   if (!registration || registration.isDeleted) {
     throw new ApiError(404, "Registration not found");
   }
 
-  if (registration.participant.toString() !== participantId.toString()) {
+  if (
+    registration.team.leader.toString() !==
+    leaderId.toString()
+  ) {
     throw new ApiError(
       403,
-      "You are not authorized to cancel this registration"
+      "Only the team leader can cancel registration"
     );
   }
 
   if (registration.status === "Approved") {
     throw new ApiError(
       400,
-      "Approved registrations cannot be cancelled"
+      "Approved registration cannot be cancelled"
     );
   }
 
@@ -105,9 +123,11 @@ export const cancelRegistrationService = async (
 
   await registration.save();
 
-  const hackathon = await Hackathon.findById(registration.hackathon);
+  const hackathon = await Hackathon.findById(
+    registration.hackathon
+  );
 
-  if (hackathon && hackathon.registrationCount > 0) {
+  if (hackathon.registrationCount > 0) {
     hackathon.registrationCount -= 1;
     await hackathon.save();
   }
@@ -115,52 +135,64 @@ export const cancelRegistrationService = async (
   return registration;
 };
 
+/* -------------------------------------------------------------------------- */
+/*                         Get My Team Registration                           */
+/* -------------------------------------------------------------------------- */
 
+export const getMyRegistrationService = async (
+  leaderId
+) => {
+  const team = await Team.findOne({
+    leader: leaderId,
+    isDeleted: false,
+  });
 
+  if (!team) {
+    throw new ApiError(
+      404,
+      "You don't lead any team"
+    );
+  }
 
-
-
-
-
-
-
-
-// Get Logged-in Participant Registrations
-export const getMyRegistrationsService = async (participantId) => {
-  return await Registration.find({
-    participant: participantId,
+  const registration = await Registration.findOne({
+    team: team._id,
     isDeleted: false,
   })
+    .populate("team")
     .populate("hackathon")
-    .sort({ createdAt: -1 });
+    .populate("approvedBy", "name email");
+
+  if (!registration) {
+    throw new ApiError(
+      404,
+      "Registration not found"
+    );
+  }
+
+  return registration;
 };
 
+/* -------------------------------------------------------------------------- */
+/*                  Get Registrations of a Hackathon                          */
+/* -------------------------------------------------------------------------- */
 
-
-
-
-
-
-
-
-
-
-
-// Get Registrations for a Hackathon
 export const getHackathonRegistrationsService = async (
   hackathonId,
   organizerId
 ) => {
   const hackathon = await Hackathon.findById(hackathonId);
 
-  if (!hackathon || hackathon.isDeleted) {
+  if (!hackathon) {
     throw new ApiError(404, "Hackathon not found");
   }
 
-  if (hackathon.organizer.toString() !== organizerId.toString()) {
+  if (
+    hackathon.organizer.toString() !==
+    organizerId.toString()
+  ) {
     throw new ApiError(
       403,
-      "You are not authorized to view registrations"
+      "Unauthorized"
     );
   }
 
@@ -168,40 +200,46 @@ export const getHackathonRegistrationsService = async (
     hackathon: hackathonId,
     isDeleted: false,
   })
-    .populate("participant", "fullName email avatar")
-    .sort({ createdAt: -1 });
+    .populate({
+      path: "team",
+      populate: {
+        path: "leader members.user",
+        select: "name email",
+      },
+    })
+    .populate("approvedBy", "name email");
 };
 
+/* -------------------------------------------------------------------------- */
+/*                     Approve / Reject Registration                          */
+/* -------------------------------------------------------------------------- */
 
-
-
-
-
-
-
-
-
-
-// Approve / Reject Registration
 export const updateRegistrationStatusService = async (
   registrationId,
   organizerId,
   status,
   remarks
 ) => {
-  const registration = await Registration.findById(registrationId)
-    .populate("hackathon");
+  const registration = await Registration.findById(registrationId);
 
   if (!registration || registration.isDeleted) {
-    throw new ApiError(404, "Registration not found");
+    throw new ApiError(
+      404,
+      "Registration not found"
+    );
   }
 
+  const hackathon = await Hackathon.findById(
+    registration.hackathon
+  );
+
   if (
-    registration.hackathon.organizer.toString() !== organizerId.toString()
+    hackathon.organizer.toString() !==
+    organizerId.toString()
   ) {
     throw new ApiError(
       403,
-      "You are not authorized to update this registration"
+      "Unauthorized"
     );
   }
 
@@ -212,14 +250,13 @@ export const updateRegistrationStatusService = async (
 
   await registration.save();
 
-  return registration.populate([
-    {
-      path: "participant",
-      select: "fullName email",
-    },
-    {
-      path: "approvedBy",
-      select: "fullName email",
-    },
-  ]);
+  return await Registration.findById(registration._id)
+    .populate({
+      path: "team",
+      populate: {
+        path: "leader members.user",
+        select: "name email",
+      },
+    })
+    .populate("approvedBy", "name email");
 };

@@ -1,7 +1,13 @@
 import { body, param, validationResult } from "express-validator";
 
-// Register for Hackathon
+// Register Team for Hackathon
 export const createRegistrationValidator = [
+  body("team")
+    .notEmpty()
+    .withMessage("Team ID is required")
+    .isMongoId()
+    .withMessage("Invalid Team ID"),
+
   body("hackathon")
     .notEmpty()
     .withMessage("Hackathon ID is required")
