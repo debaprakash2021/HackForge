@@ -11,6 +11,8 @@ import registrationRoutes from "./routes/registration.routes.js";
 import teamRoutes from "./routes/team.routes.js";
 import submissionRoutes from "./routes/submission.routes.js";
 
+import ApiError from "./utils/ApiError.js";
+
 
 
 
@@ -41,7 +43,15 @@ app.use(express.urlencoded({ extended: true }));
 
 app.use(cookieParser());
 
-app.use(errorHandler);
+
+app.use((req, res, next) => {
+  console.log("================================");
+  console.log("METHOD :", req.method);
+  console.log("URL    :", req.originalUrl);
+  console.log("================================");
+  next();
+});
+
 
 // =========================
 // Routes
@@ -54,11 +64,6 @@ app.get("/", (req, res) => {
   });
 });
 
-
-
-// =========================
-// Routes
-// =========================
 
 app.use("/api/v1/auth", authRoutes);
 app.use("/api/v1/hackathons", hackathonRoutes);
@@ -75,6 +80,6 @@ app.use((req, res, next) => {
   next(new ApiError(404, "Route Not Found"));
 });
 
-
+app.use(errorHandler);
 
 export default app;

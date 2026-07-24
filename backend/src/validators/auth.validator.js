@@ -2,9 +2,10 @@ import { body, validationResult } from "express-validator";
 
 
 
-// ==========================
+
 // Register Validation Rules
-// ==========================
+
+
 
 export const registerValidator = [
 
@@ -43,9 +44,9 @@ export const registerValidator = [
 
 
 
-// ==========================
+
 // Login Validation Rules
-// ==========================
+
 
 export const loginValidator = [
 
@@ -66,9 +67,9 @@ export const loginValidator = [
 
 
 
-// ==========================
+
 // Validation Middleware
-// ==========================
+
 
 export const validate = (req, res, next) => {
 

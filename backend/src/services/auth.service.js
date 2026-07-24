@@ -4,9 +4,8 @@ import generateToken from "../utils/generateToken.js";
 
 
 
-// ==============================
 // Register User
-// ==============================
+
 
 export const registerUserService = async (userData) => {
 
@@ -47,9 +46,9 @@ export const registerUserService = async (userData) => {
 
 
 
-// ==============================
+
 // Login User
-// ==============================
+
 
 export const loginUserService = async (email, password) => {
 
@@ -78,9 +77,9 @@ export const loginUserService = async (email, password) => {
 
 
 
-// ==============================
+
 // Get Current User
-// ==============================
+
 
 export const getCurrentUserService = async (userId) => {
 

@@ -20,10 +20,7 @@ import {
 
 const router = express.Router();
 
-/* -------------------------------------------------------------------------- */
-/*                           Participant Routes                               */
-/* -------------------------------------------------------------------------- */
-
+//Participant Routes
 // Submit Project
 router.post(
   "/",
@@ -52,10 +49,8 @@ router.get(
   getMySubmission
 );
 
-/* -------------------------------------------------------------------------- */
-/*                           Organizer Routes                                 */
-/* -------------------------------------------------------------------------- */
 
+//Organizer Routes
 // View all submissions of a hackathon
 router.get(
   "/hackathon/:hackathonId",

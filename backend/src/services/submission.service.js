@@ -5,10 +5,7 @@ import Hackathon from "../models/Hackathon.js";
 
 import ApiError from "../utils/ApiError.js";
 
-/* -------------------------------------------------------------------------- */
-/*                           Create Submission                                */
-/* -------------------------------------------------------------------------- */
-
+//Create Submission
 export const createSubmissionService = async (
   leaderId,
   data
@@ -92,10 +89,7 @@ export const createSubmissionService = async (
     .populate("hackathon");
 };
 
-/* -------------------------------------------------------------------------- */
-/*                           Update Submission                                */
-/* -------------------------------------------------------------------------- */
-
+// Update Submission 
 export const updateSubmissionService = async (
   submissionId,
   leaderId,
@@ -130,10 +124,8 @@ export const updateSubmissionService = async (
   return submission;
 };
 
-/* -------------------------------------------------------------------------- */
-/*                            Get My Submission                               */
-/* -------------------------------------------------------------------------- */
 
+//Get My Submission
 export const getMySubmissionService = async (leaderId) => {
   const team = await Team.findOne({
     leader: leaderId,
@@ -171,9 +163,9 @@ export const getMySubmissionService = async (leaderId) => {
   return submission;
 };
 
-/* -------------------------------------------------------------------------- */
-/*                    Get All Submissions of Hackathon                        */
-/* -------------------------------------------------------------------------- */
+
+
+//Get All Submissions of Hackathon
 
 export const getHackathonSubmissionsService = async (
   hackathonId,

@@ -9,14 +9,11 @@ import asyncHandler from "../utils/asyncHandler.js";
 
 import cookieOptions from "../constants/cookieOptions.js";
 
-res.cookie("token", token, cookieOptions);
-res.clearCookie("token", cookieOptions);
 
 
 
-// ==============================
 // Register User
-// ==============================
+
 
 export const registerUser = asyncHandler(async (req, res) => {
 
@@ -35,9 +32,9 @@ export const registerUser = asyncHandler(async (req, res) => {
 
 
 
-// ==============================
+
 // Login User
-// ==============================
+
 
 export const loginUser = asyncHandler(async (req, res) => {
   const { email, password } = req.body;
@@ -61,9 +58,9 @@ export const loginUser = asyncHandler(async (req, res) => {
 
 
 
-// ==============================
+
 // Logout User
-// ==============================
+
 
 export const logoutUser = asyncHandler(async (req, res) => {
   return res
@@ -79,9 +76,9 @@ export const logoutUser = asyncHandler(async (req, res) => {
 
 
 
-// ==============================
+
 // Get Current User
-// ==============================
+
 
 export const getCurrentUser = asyncHandler(async (req, res) => {
 

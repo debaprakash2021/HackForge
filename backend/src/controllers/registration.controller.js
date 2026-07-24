@@ -9,10 +9,6 @@ import {
   updateRegistrationStatusService,
 } from "../services/registration.service.js";
 
-/* -------------------------------------------------------------------------- */
-/*                     Register Team for Hackathon                            */
-/* -------------------------------------------------------------------------- */
-
 
 
 //Register Team for Hackathon

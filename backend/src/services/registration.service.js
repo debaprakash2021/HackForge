@@ -4,9 +4,8 @@ import Hackathon from "../models/Hackathon.js";
 
 import ApiError from "../utils/ApiError.js";
 
-/* -------------------------------------------------------------------------- */
-/*                       Register Team for Hackathon                          */
-/* -------------------------------------------------------------------------- */
+
+//Register Team for Hackathon
 
 export const createRegistrationService = async (
   leaderId,
@@ -86,9 +85,8 @@ export const createRegistrationService = async (
     .populate("hackathon");
 };
 
-/* -------------------------------------------------------------------------- */
-/*                         Cancel Registration                                */
-/* -------------------------------------------------------------------------- */
+
+//Cancel Registration
 
 export const cancelRegistrationService = async (
   registrationId,
@@ -135,9 +133,9 @@ export const cancelRegistrationService = async (
   return registration;
 };
 
-/* -------------------------------------------------------------------------- */
-/*                         Get My Team Registration                           */
-/* -------------------------------------------------------------------------- */
+
+
+//Get My Team Registration
 
 export const getMyRegistrationService = async (
   leaderId
@@ -172,9 +170,9 @@ export const getMyRegistrationService = async (
   return registration;
 };
 
-/* -------------------------------------------------------------------------- */
-/*                  Get Registrations of a Hackathon                          */
-/* -------------------------------------------------------------------------- */
+
+
+//Get Registrations of a Hackathon
 
 export const getHackathonRegistrationsService = async (
   hackathonId,
@@ -210,9 +208,9 @@ export const getHackathonRegistrationsService = async (
     .populate("approvedBy", "name email");
 };
 
-/* -------------------------------------------------------------------------- */
-/*                     Approve / Reject Registration                          */
-/* -------------------------------------------------------------------------- */
+
+
+//Approve / Reject Registration
 
 export const updateRegistrationStatusService = async (
   registrationId,
