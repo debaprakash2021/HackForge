@@ -10,6 +10,9 @@ import hackathonRoutes from "./routes/hackathon.routes.js";
 import registrationRoutes from "./routes/registration.routes.js";
 import teamRoutes from "./routes/team.routes.js";
 import submissionRoutes from "./routes/submission.routes.js";
+import reviewRoutes from "./routes/review.routes.js";
+import leaderboardRoutes from "./routes/leaderboard.routes.js";
+
 
 import ApiError from "./utils/ApiError.js";
 
@@ -70,6 +73,8 @@ app.use("/api/v1/hackathons", hackathonRoutes);
 app.use("/api/v1/registrations", registrationRoutes);
 app.use("/api/v1/teams", teamRoutes);
 app.use("/api/v1/submissions", submissionRoutes);
+app.use("/api/v1/reviews", reviewRoutes);
+app.use("/api/v1/leaderboard", leaderboardRoutes);
 
 
 // =========================
