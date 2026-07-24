@@ -12,6 +12,10 @@ import teamRoutes from "./routes/team.routes.js";
 import submissionRoutes from "./routes/submission.routes.js";
 import reviewRoutes from "./routes/review.routes.js";
 import leaderboardRoutes from "./routes/leaderboard.routes.js";
+import judgeAssignmentRoutes from "./routes/judgeAssignment.routes.js";
+import uploadRoutes from "./routes/upload.routes.js";
+
+
 
 
 import ApiError from "./utils/ApiError.js";
@@ -75,6 +79,8 @@ app.use("/api/v1/teams", teamRoutes);
 app.use("/api/v1/submissions", submissionRoutes);
 app.use("/api/v1/reviews", reviewRoutes);
 app.use("/api/v1/leaderboard", leaderboardRoutes);
+app.use("/api/v1/judge-assignments", judgeAssignmentRoutes);
+app.use("/api/v1/uploads", uploadRoutes);
 
 
 // =========================
