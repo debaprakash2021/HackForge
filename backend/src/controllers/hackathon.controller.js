@@ -61,14 +61,21 @@ export const deleteHackathon = asyncHandler(async (req, res) => {
 });
 
 // Search Hackathons
+// Search Hackathons
 export const searchHackathons = asyncHandler(async (req, res) => {
-  const { keyword } = req.query;
 
-  const hackathons = await searchHackathonsService(keyword);
+  const { keyword = "" } = req.query;
 
-  return res
-    .status(200)
-    .json(new ApiResponse(200, "Search completed successfully", hackathons));
+  const hackathons =
+    await searchHackathonsService(keyword);
+
+  return res.status(200).json(
+    new ApiResponse(
+      200,
+      "Search completed successfully",
+      hackathons
+    )
+  );
 });
 
 // Filter Hackathons

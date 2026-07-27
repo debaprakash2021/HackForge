@@ -141,15 +141,48 @@ export const deleteHackathonService = async (
 
 
 // Search Hackathons
+// Search Hackathons
 export const searchHackathonsService = async (keyword) => {
-  return await Hackathon.find({
-    isDeleted: false,
-    $text: {
-      $search: keyword,
-    },
-  }).populate("organizer", "fullName email");
-};
 
+  const query = {
+    isDeleted: false,
+  };
+
+  if (keyword && keyword.trim()) {
+    query.$or = [
+      {
+        title: {
+          $regex: keyword,
+          $options: "i",
+        },
+      },
+      {
+        description: {
+          $regex: keyword,
+          $options: "i",
+        },
+      },
+      {
+        theme: {
+          $regex: keyword,
+          $options: "i",
+        },
+      },
+      {
+        venue: {
+          $regex: keyword,
+          $options: "i",
+        },
+      },
+    ];
+  }
+
+  return await Hackathon.find(query)
+    .populate("organizer", "fullName email")
+    .sort({
+      createdAt: -1,
+    });
+};
 
 
 
