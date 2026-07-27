@@ -60,7 +60,7 @@ export const deleteHackathon = asyncHandler(async (req, res) => {
     .json(new ApiResponse(200, "Hackathon deleted successfully"));
 });
 
-// Search Hackathons
+
 // Search Hackathons
 export const searchHackathons = asyncHandler(async (req, res) => {
 
@@ -78,11 +78,18 @@ export const searchHackathons = asyncHandler(async (req, res) => {
   );
 });
 
-// Filter Hackathons
-export const filterHackathons = asyncHandler(async (req, res) => {
-  const hackathons = await filterHackathonsService(req.query);
 
-  return res
-    .status(200)
-    .json(new ApiResponse(200, "Filtered hackathons fetched successfully", hackathons));
+export const filterHackathons = asyncHandler(async (req, res) => {
+
+  const hackathons =
+    await filterHackathonsService(req.query);
+
+  return res.status(200).json(
+    new ApiResponse(
+      200,
+      "Filtered hackathons fetched successfully",
+      hackathons
+    )
+  );
+
 });

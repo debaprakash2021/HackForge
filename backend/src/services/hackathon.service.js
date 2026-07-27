@@ -189,27 +189,59 @@ export const searchHackathonsService = async (keyword) => {
 
 // Filter Hackathons
 export const filterHackathonsService = async (filters) => {
+
   const query = {
     isDeleted: false,
   };
 
+  // Theme
   if (filters.theme) {
     query.theme = filters.theme;
   }
 
+  // Mode
   if (filters.mode) {
     query.mode = filters.mode;
   }
 
+  // Status
   if (filters.status) {
     query.status = filters.status;
   }
 
+  // Registration Status
   if (filters.registrationStatus) {
-    query.registrationStatus = filters.registrationStatus;
+    query.registrationStatus =
+      filters.registrationStatus;
+  }
+
+  // Minimum Prize Pool
+  if (filters.minPrizePool) {
+    query.prizePool = {
+      $gte: Number(filters.minPrizePool),
+    };
+  }
+
+  // Date Range
+  if (filters.startDate || filters.endDate) {
+    query.startDate = {};
+
+    if (filters.startDate) {
+      query.startDate.$gte = new Date(
+        filters.startDate
+      );
+    }
+
+    if (filters.endDate) {
+      query.startDate.$lte = new Date(
+        filters.endDate
+      );
+    }
   }
 
   return await Hackathon.find(query)
     .populate("organizer", "fullName email")
-    .sort({ startDate: 1 });
+    .sort({
+      startDate: 1,
+    });
 };
