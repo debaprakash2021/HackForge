@@ -1,6 +1,7 @@
 import Hackathon from "../models/Hackathon.js";
 import ApiError from "../utils/ApiError.js";
-
+import { getSortOptions } from "../utils/sorting.js";
+import { getPagination } from "../utils/pagination.js";
 
 
 
@@ -42,11 +43,127 @@ export const createHackathonService = async (data, organizerId) => {
 
 
 
+
+
 // Get All Hackathons
-export const getAllHackathonsService = async () => {
-  return await Hackathon.find({ isDeleted: false })
-    .populate("organizer", "fullName email")
-    .sort({ createdAt: -1 });
+// Get All Hackathons (Search + Filter + Pagination + Sorting)
+export const getAllHackathonsService = async (queryParams) => {
+
+  const {
+    keyword,
+    theme,
+    mode,
+    status,
+    registrationStatus,
+    minPrizePool,
+    startDate,
+    endDate,
+    sort,
+  } = queryParams;
+
+  const query = {
+    isDeleted: false,
+  };
+
+  // Search
+  if (keyword && keyword.trim()) {
+    query.$or = [
+      {
+        title: {
+          $regex: keyword,
+          $options: "i",
+        },
+      },
+      {
+        description: {
+          $regex: keyword,
+          $options: "i",
+        },
+      },
+      {
+        theme: {
+          $regex: keyword,
+          $options: "i",
+        },
+      },
+      {
+        venue: {
+          $regex: keyword,
+          $options: "i",
+        },
+      },
+    ];
+  }
+
+  // Filters
+  if (theme) {
+    query.theme = theme;
+  }
+
+  if (mode) {
+    query.mode = mode;
+  }
+
+  if (status) {
+    query.status = status;
+  }
+
+  if (registrationStatus) {
+    query.registrationStatus = registrationStatus;
+  }
+
+  if (minPrizePool) {
+    query.prizePool = {
+      $gte: Number(minPrizePool),
+    };
+  }
+
+  if (startDate || endDate) {
+    query.startDate = {};
+
+    if (startDate) {
+      query.startDate.$gte = new Date(startDate);
+    }
+
+    if (endDate) {
+      query.startDate.$lte = new Date(endDate);
+    }
+  }
+
+  // Pagination
+  const { page, limit, skip } =
+    getPagination(queryParams);
+
+  // Sorting
+  const sortOption =
+    getSortOptions(sort);
+
+  const totalHackathons =
+    await Hackathon.countDocuments(query);
+
+  const hackathons =
+    await Hackathon.find(query)
+      .populate("organizer", "fullName email")
+      .sort(sortOption)
+      .skip(skip)
+      .limit(limit);
+
+  return {
+    hackathons,
+
+    pagination: {
+      page,
+      limit,
+      totalHackathons,
+      totalPages: Math.ceil(
+        totalHackathons / limit
+      ),
+      hasNextPage:
+        page <
+        Math.ceil(totalHackathons / limit),
+      hasPreviousPage: page > 1,
+    },
+  };
 };
 
 
@@ -111,6 +228,8 @@ export const updateHackathonService = async (
 
 
 
+
+
 // Delete Hackathon (Soft Delete)
 export const deleteHackathonService = async (
   hackathonId,
@@ -137,111 +256,3 @@ export const deleteHackathonService = async (
 };
 
 
-
-
-
-// Search Hackathons
-// Search Hackathons
-export const searchHackathonsService = async (keyword) => {
-
-  const query = {
-    isDeleted: false,
-  };
-
-  if (keyword && keyword.trim()) {
-    query.$or = [
-      {
-        title: {
-          $regex: keyword,
-          $options: "i",
-        },
-      },
-      {
-        description: {
-          $regex: keyword,
-          $options: "i",
-        },
-      },
-      {
-        theme: {
-          $regex: keyword,
-          $options: "i",
-        },
-      },
-      {
-        venue: {
-          $regex: keyword,
-          $options: "i",
-        },
-      },
-    ];
-  }
-
-  return await Hackathon.find(query)
-    .populate("organizer", "fullName email")
-    .sort({
-      createdAt: -1,
-    });
-};
-
-
-
-
-// Filter Hackathons
-export const filterHackathonsService = async (filters) => {
-
-  const query = {
-    isDeleted: false,
-  };
-
-  // Theme
-  if (filters.theme) {
-    query.theme = filters.theme;
-  }
-
-  // Mode
-  if (filters.mode) {
-    query.mode = filters.mode;
-  }
-
-  // Status
-  if (filters.status) {
-    query.status = filters.status;
-  }
-
-  // Registration Status
-  if (filters.registrationStatus) {
-    query.registrationStatus =
-      filters.registrationStatus;
-  }
-
-  // Minimum Prize Pool
-  if (filters.minPrizePool) {
-    query.prizePool = {
-      $gte: Number(filters.minPrizePool),
-    };
-  }
-
-  // Date Range
-  if (filters.startDate || filters.endDate) {
-    query.startDate = {};
-
-    if (filters.startDate) {
-      query.startDate.$gte = new Date(
-        filters.startDate
-      );
-    }
-
-    if (filters.endDate) {
-      query.startDate.$lte = new Date(
-        filters.endDate
-      );
-    }
-  }
-
-  return await Hackathon.find(query)
-    .populate("organizer", "fullName email")
-    .sort({
-      startDate: 1,
-    });
-};

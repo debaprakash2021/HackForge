@@ -6,8 +6,6 @@ import {
   getHackathonById,
   updateHackathon,
   deleteHackathon,
-  searchHackathons,
-  filterHackathons,
 } from "../controllers/hackathon.controller.js";
 
 import {
@@ -31,12 +29,6 @@ const router = express.Router();
 
 // Get all hackathons
 router.get("/", getAllHackathons);
-
-// Search hackathons
-router.get("/search", searchHackathons);
-
-// Filter hackathons
-router.get("/filter", filterHackathons);
 
 // Get single hackathon
 router.get("/:id", getHackathonById);

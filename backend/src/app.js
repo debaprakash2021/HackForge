@@ -15,6 +15,8 @@ import leaderboardRoutes from "./routes/leaderboard.routes.js";
 import judgeAssignmentRoutes from "./routes/judgeAssignment.routes.js";
 import uploadRoutes from "./routes/upload.routes.js";
 import notificationRoutes from "./routes/notification.routes.js";
+import dashboardRoutes from "./routes/dashboard.routes.js";
+
 
 
 
@@ -83,6 +85,7 @@ app.use("/api/v1/leaderboard", leaderboardRoutes);
 app.use("/api/v1/judge-assignments", judgeAssignmentRoutes);
 app.use("/api/v1/uploads", uploadRoutes);
 app.use("/api/v1/notifications",notificationRoutes);
+app.use("/api/v1/dashboard",dashboardRoutes);
 
 
 // =========================
